@@ -1,0 +1,416 @@
+/* ---------- Reset & Base ---------- */
+* { 
+  margin: 0;
+  padding: 0; 
+  box-sizing: border-box; 
+  font-family: 'Inter', sans-serif; 
+} 
+
+body { 
+  background-color: #f6f7f8; 
+  color: #111418; 
+  min-height: 100vh; 
+}
+
+/* ---------- App ---------- */
+.app { 
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1rem;
+  min-height: 100vh;
+  max-width: 100%;
+  margin: 0;
+}
+
+/* ---------- Header ---------- */
+.header { 
+  position: sticky; 
+  top: 0; 
+  z-index: 10; 
+  background-color: rgba(246, 247, 248, 0.95); 
+  backdrop-filter: blur(5px); 
+  border-bottom: 1px solid #e3e6e9; 
+  padding: 1rem 0; 
+}
+
+.header-top { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  flex-wrap: wrap; 
+  gap: 1rem; 
+}
+
+.logo { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.5rem; 
+}
+
+.logo img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.logo h1 { 
+  font-size: 1.25rem; 
+  font-weight: 700; 
+}
+
+.nav { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 1rem; 
+}
+
+.nav a { 
+  text-decoration: none; 
+  font-weight: 500; 
+  color: #617589; 
+  transition: color 0.2s; 
+}
+
+.nav a:hover { 
+  color: #997047; 
+}
+
+.actions { 
+  display: flex; 
+  align-items: center; 
+  gap: 1rem; 
+}
+
+.actions button { 
+  padding: 0.5rem 1rem; 
+  border-radius: 9999px; 
+  border: none; 
+  background-color: #997047; 
+  color: white; 
+  font-weight: 700; 
+  cursor: pointer; 
+  transition: opacity 0.2s; 
+}
+
+.actions button:hover { 
+  opacity: 0.9; 
+}
+
+/* ---------- Main ---------- */
+.main { 
+  flex-grow: 1; 
+  padding: 2rem; 
+  width: 100%; 
+  max-width: 100%; 
+}
+
+.main-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 2rem; 
+}
+
+.main-header h2 { 
+  font-size: 2rem; 
+  font-weight: 700; 
+}
+
+.add-board-mobile { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  width: 48px; 
+  height: 48px; 
+  border-radius: 50%; 
+  background-color: #997047; 
+  color: white; 
+  font-size: 2rem; 
+  cursor: pointer; 
+  z-index: 20; 
+}
+
+/* ---------- Boards ---------- */
+.boards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.board-card, .add-new-board {
+  flex: 1 1 200px; 
+  max-width: 100%;
+}
+
+.board-card { 
+  background-color: #fff; 
+  border: 1px solid #e3e6e9; 
+  border-radius: 0.5rem; 
+  display: flex; 
+  flex-direction: column; 
+  padding: 0.5rem;
+  min-width: 250px;
+  max-width: 250px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.board-card:hover { 
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.board-image { 
+  width: 100%; 
+  aspect-ratio: 4 / 3; 
+  background-size: cover; 
+  background-position: center; 
+}
+
+.board-card h3 { 
+  font-size: 1.125rem; 
+  font-weight: 700; 
+  margin: 0.75rem 1rem 0.25rem; 
+}
+
+.board-card p { 
+  font-size: 0.875rem; 
+  color: #617589; 
+  margin: 0 1rem 1rem; 
+}
+
+.add-new-board { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  border: 2px dashed #e3e6e9; 
+  border-radius: 0.5rem; 
+  min-height: 250px; 
+  transition: all 0.3s; 
+  cursor: pointer; 
+}
+
+.add-new-board:hover { 
+  border-color: #997047; 
+  background-color: #d8a766; 
+}
+
+.add-new-board span { 
+  font-size: 2.5rem; 
+  margin-bottom: 0.5rem; 
+  color: #617589; 
+}
+
+/* ---------- Footer ---------- */
+.footer { 
+  padding: 1.5rem 0; 
+  text-align: center; 
+  border-top: 1px solid #e3e6e9; 
+}
+
+.footer a { 
+  text-decoration: none; 
+  color: #617589; 
+  margin: 0 1rem; 
+}
+
+.footer a:hover { 
+  color: #997047; 
+}
+
+/* ---------- Tablero Kanban ---------- */
+.tablero {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  margin-top: 1.5rem;
+}
+
+.tablero-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tablero-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.tablero-main {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  overflow-x: auto;
+  align-items: flex-start;
+}
+
+/* Columna */
+.columna {
+  background: #fff;
+  border: 1px solid #e3e6e9;
+  border-radius: 8px;
+  min-width: 260px;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  height: 64vh;
+  box-shadow: 0 2px 6px rgba(16,24,40,0.04);
+}
+
+.columna-header {
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.columna-title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.columna-controls .btn-small {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #617589;
+  font-size: 0.95rem;
+  margin-left: 6px;
+}
+
+/* Área de tareas */
+.columna-tareas {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Tarea */
+.tarea {
+  background: #fff;
+  border-radius: 6px;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 1px 3px rgba(2,6,23,0.04);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tarea-text {
+  font-size: 0.95rem;
+  color: #111;
+}
+
+.tarea-actions .tarea-delete {
+  background: transparent;
+  border: none;
+  color: #c53030;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+/* Agregar tarea */
+.agregar-tarea-btn {
+  border: none;
+  background: none;
+  color: #997047;
+  padding: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  font-weight: 700;
+}
+
+.agregar-tarea-form {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.agregar-tarea-input {
+  width: 100%;
+  resize: vertical;
+  padding: 0.5rem;
+  border: 1px solid #e3e6e9;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+/* Agregar columna (botón) */
+.agregar-columna {
+  min-width: 200px;
+  border: 2px dashed #e3e6e9;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #617589;
+  cursor: pointer;
+  padding: 0.75rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.3));
+}
+
+/* Buttons genéricos */
+.btn {
+  background: #997047;
+  color: white;
+  border: none;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid #e3e6e9;
+  color: #111;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .columna { min-width: 220px; height: 60vh; }
+  .tablero-main { gap: 0.75rem; }
+}
+
+@media (max-width: 768px) {
+  .main-header { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 1rem; 
+  }
+    
+  .add-board-mobile { 
+    position: fixed; 
+    bottom: 1.5rem; 
+    right: 1.5rem; 
+  }
+    
+  .nav { 
+    flex-direction: column; 
+    gap: 0.5rem; 
+    width: 100%; 
+  }
+    
+  .boards { 
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+    gap: 1rem; 
+  }
+    
+  .header-top { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 0.5rem; 
+  }
+}
