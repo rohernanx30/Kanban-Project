@@ -1,6 +1,5 @@
 import React from "react";
-import './components.css';
-import '../App.css'; 
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function Columna({ columna, actualizarColumna }) {
   const [nombre, setNombre] = React.useState(columna.nombre);
@@ -24,25 +23,49 @@ export default function Columna({ columna, actualizarColumna }) {
     actualizarColumna({ ...columna, nombre, tareas: nuevasTareas });
   };
 
+  const eliminarTarea = (id) => {
+    const nuevasTareas = tareas.filter(t => t.id !== id);
+    setTareas(nuevasTareas);
+    actualizarColumna({ ...columna, nombre, tareas: nuevasTareas });
+  };
+
   return (
-    <div className="board-card" style={{ minWidth: "250px", maxWidth: "250px" }}>
+    <div className="card mb-3" style={{ minWidth: "250px", maxWidth: "250px" }}>
+      {/* Nombre de la columna */}
       <input
         type="text"
         value={nombre}
         onChange={cambiarNombre}
-        style={{ fontWeight: "700", margin: "0.5rem" }}
+        className="form-control fw-bold mb-2"
+        placeholder="Nombre de columna"
       />
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", padding: "0 0.5rem" }}>
+
+      {/* Lista de tareas */}
+      <div className="d-flex flex-column gap-2 p-2">
         {tareas.map(t => (
-          <input
-            key={t.id}
-            type="text"
-            value={t.texto}
-            onChange={(e) => cambiarTarea(t.id, e.target.value)}
-            style={{ padding: "0.25rem", borderRadius: "4px", border: "1px solid #ccc" }}
-          />
+          <div key={t.id} className="d-flex align-items-center gap-2 bg-light rounded p-2">
+            <input
+              type="text"
+              value={t.texto}
+              onChange={(e) => cambiarTarea(t.id, e.target.value)}
+              className="form-control"
+            />
+            <button 
+              onClick={() => eliminarTarea(t.id)} 
+              className="btn btn-danger btn-sm"
+            >
+              ✕
+            </button>
+          </div>
         ))}
-        <button onClick={agregarTarea} style={{ marginTop: "0.5rem", borderRadius: "9999px", backgroundColor: "#997047", color: "white", border: "none", padding: "0.25rem" }}>+ Agregar tarea</button>
+
+        {/* Botón agregar tarea */}
+        <button 
+          onClick={agregarTarea} 
+          className="btn btn-outline-primary mt-2"
+        >
+          + Agregar tarea
+        </button>
       </div>
     </div>
   );

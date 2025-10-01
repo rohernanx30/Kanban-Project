@@ -1,39 +1,42 @@
 import React, { useState } from "react";
-import '../App.css'; 
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function AgregarTarea({ onAdd }) {
   const [open, setOpen] = useState(false);
   const [texto, setTexto] = useState("");
 
-  function submit() {
+  const submit = () => {
     if (!texto.trim()) return;
     onAdd(texto.trim());
     setTexto("");
     setOpen(false);
-  }
+  };
 
   if (!open) {
     return (
-      <button className="agregar-tarea-btn" onClick={() => setOpen(true)}>
+      <button 
+        className="btn btn-outline-primary w-100" 
+        onClick={() => setOpen(true)}
+      >
         + Agregar tarea
       </button>
     );
   }
 
   return (
-    <div className="agregar-tarea-form">
+    <div className="mt-2">
       <textarea
-        className="agregar-tarea-input"
+        className="form-control mb-2"
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
         placeholder="Describe la tarea..."
         rows={3}
       />
-      <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
-        <button className="btn" onClick={submit}>
+      <div className="d-flex gap-2">
+        <button className="btn btn-primary" onClick={submit}>
           Agregar
         </button>
-        <button className="btn btn-ghost" onClick={() => setOpen(false)}>
+        <button className="btn btn-secondary" onClick={() => setOpen(false)}>
           Cancelar
         </button>
       </div>

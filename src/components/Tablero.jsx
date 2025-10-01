@@ -1,7 +1,6 @@
 import React from "react";
 import Columna from "./Columna";
-import './components.css';
-import '../App.css'; 
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function Tablero({ tablero, actualizarTablero }) {
   const [nombre, setNombre] = React.useState(tablero.nombre);
@@ -23,25 +22,40 @@ export default function Tablero({ tablero, actualizarTablero }) {
   };
 
   return (
-    <div className="tablero" style={{ display: "flex", gap: "1rem", overflowX: "auto" }}>
-      <div>
+    <div className="container-fluid mt-3">
+      {/* Título del tablero */}
+      <div className="mb-3">
         <input
           type="text"
           value={nombre}
           onChange={cambiarNombre}
-          style={{ fontSize: "1.5rem", fontWeight: "700", marginBottom: "1rem" }}
+          className="form-control form-control-lg fw-bold"
+          placeholder="Nombre del tablero"
         />
       </div>
-      {tablero.columnas.map((col) => (
-        <Columna
-          key={col.id}
-          columna={col}
-          actualizarColumna={actualizarColumna}
-        />
-      ))}
-      <div className="add-new-board" style={{ minWidth: "200px" }} onClick={agregarColumna}>
-        <span>+</span>
-        <p>Agregar columna</p>
+
+      {/* Columnas Kanban */}
+      <div className="row flex-row flex-nowrap overflow-auto g-3">
+        {tablero.columnas.map((col) => (
+          <div key={col.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+            <Columna
+              columna={col}
+              actualizarColumna={actualizarColumna}
+            />
+          </div>
+        ))}
+
+        {/* Botón para agregar columna */}
+        <div className="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div 
+            className="card text-center p-3 d-flex align-items-center justify-content-center"
+            style={{ minHeight: "200px", cursor: "pointer", border: "2px dashed #6c757d" }}
+            onClick={agregarColumna}
+          >
+            <span className="fs-1 text-muted">+</span>
+            <p className="text-muted mt-2 mb-0">Agregar columna</p>
+          </div>
+        </div>
       </div>
     </div>
   );

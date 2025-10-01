@@ -1,5 +1,5 @@
 import React from "react";
-import './components.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function Columna({ columna, actualizarColumna }) {
   const [nombre, setNombre] = React.useState(columna.nombre);
@@ -30,50 +30,39 @@ export default function Columna({ columna, actualizarColumna }) {
   };
 
   return (
-    <div className="board-card" style={{ minWidth: "250px", maxWidth: "250px" }}>
+    <div className="card mb-3" style={{ minWidth: "250px", maxWidth: "250px" }}>
+      {/* Nombre de la columna */}
       <input
         type="text"
         value={nombre}
         onChange={cambiarNombre}
         placeholder="Nombre de columna"
-        style={{
-          fontWeight: "700",
-          margin: "0.5rem",
-          width: "calc(100% - 1rem)",
-          padding: "0.25rem",
-          borderRadius: "4px",
-          border: "1px solid #ccc"
-        }}
+        className="form-control fw-bold mb-2"
       />
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", padding: "0 0.5rem" }}>
+
+      {/* Lista de tareas */}
+      <div className="d-flex flex-column gap-2 p-2">
         {tareas.map(t => (
-          <div key={t.id} className="board-card" style={{ padding: "0.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div key={t.id} className="d-flex align-items-center bg-light rounded p-2">
             <input
               type="text"
               value={t.texto}
               onChange={(e) => cambiarTarea(t.id, e.target.value)}
-              style={{ flexGrow: 1, border: "none", background: "transparent", outline: "none" }}
+              className="form-control me-2 border-0 bg-light"
             />
-            <button
+            <button 
               onClick={() => eliminarTarea(t.id)}
-              style={{
-                marginLeft: "0.5rem",
-                backgroundColor: "#ff4d4f",
-                color: "white",
-                border: "none",
-                borderRadius: "9999px",
-                padding: "0.25rem 0.5rem",
-                cursor: "pointer"
-              }}
+              className="btn btn-danger btn-sm"
             >
               ✕
             </button>
           </div>
         ))}
-        <button
-          onClick={agregarTarea}
-          className="actions"
-          style={{ marginTop: "0.5rem", width: "100%" }}
+
+        {/* Botón agregar tarea */}
+        <button 
+          onClick={agregarTarea} 
+          className="btn btn-outline-primary mt-2"
         >
           + Agregar tarea
         </button>

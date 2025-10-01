@@ -1,6 +1,8 @@
 import './App.css';
 import React from "react";
-import logo from './assets/icon.png'; 
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import Header from "./components/Header";  
 import Tablero from "./components/Tablero";
 
 export default function App() {
@@ -30,58 +32,64 @@ export default function App() {
   };
 
   return (
-    <div className="app">
-      <header className="header">
-        <div className="header-top">
-          <div className="logo">
-            <img src={logo} alt="Logo" style={{ width: '32px', height: '32px' }} />
-            <h1>TaskFlow</h1>
-          </div>
-          <nav className="nav">
-            <a href="#">Inicio</a>
-            <a href="#">Tablas</a>
-          </nav>
-          <div className="actions">
-            {vista === "inicio" && <button onClick={crearTablero}>Crear tablero</button>}
-            {vista === "tablero" && <button onClick={volverInicio}>Volver</button>}
-          </div>
-        </div>
-      </header>
+    <div className="app container-fluid p-0">
+      {/* Header */}
+      <Header 
+        vista={vista} 
+        crearTablero={crearTablero} 
+        volverInicio={volverInicio} 
+      />
 
-      <main className="main">
+      <main className="container-fluid py-4">
         {vista === "inicio" && (
           <>
-            <div className="main-header">
+            <div className="d-flex justify-content-between align-items-center mb-3">
               <h2>Tus tableros</h2>
-              <div className="add-board-mobile" onClick={crearTablero}>+</div>
+              <button className="btn btn-primary d-md-none" onClick={crearTablero}>+</button>
             </div>
-            <div className="boards">
+
+            <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
               {tableros.map((t) => (
                 <div
-                  className="board-card"
+                  className="col"
                   key={t.id}
                   onClick={() => { setTableroActivo(t); setVista("tablero"); }}
                 >
-                  <h3>{t.nombre}</h3>
-                  <p>Click para abrir</p>
+                  <div className="card h-100 shadow-sm cursor-pointer">
+                    <div className="card-body">
+                      <h5 className="card-title">{t.nombre}</h5>
+                      <p className="card-text">Click para abrir</p>
+                    </div>
+                  </div>
                 </div>
               ))}
 
-              <div className="add-new-board" onClick={crearTablero}>
-                <span>+</span>
-                <p>Nuevo tablero</p>
+              {/* Nuevo tablero */}
+              <div className="col">
+                <div 
+                  className="card h-100 border-dashed text-center d-flex justify-content-center align-items-center cursor-pointer"
+                  style={{ minHeight: "120px" }}
+                  onClick={crearTablero}
+                >
+                  <div>
+                    <h1>+</h1>
+                    <p>Nuevo tablero</p>
+                  </div>
+                </div>
               </div>
             </div>
           </>
         )}
 
         {vista === "tablero" && tableroActivo && (
-          <Tablero tablero={tableroActivo} actualizarTablero={actualizarTablero} />
+          <div className="overflow-auto">
+            <Tablero tablero={tableroActivo} actualizarTablero={actualizarTablero} />
+          </div>
         )}
       </main>
 
-      <footer className="footer">
-        <p>© 2025 TaskFlow. Todos los derechos reservados.</p>
+      <footer className="footer text-center py-3 bg-light mt-auto">
+        <p className="mb-0">© 2025 TaskFlow. Todos los derechos reservados.</p>
       </footer>
     </div>
   );
