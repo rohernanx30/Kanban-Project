@@ -62,7 +62,7 @@ export default function Columna({ columna, actualizarColumna }) {
         {/* Botón agregar tarea */}
         <button 
           onClick={agregarTarea} 
-          className="btn btn-outline-primary mt-2"
+          className="btn btn-primary mt-2"
         >
           + Agregar tarea
         </button>
