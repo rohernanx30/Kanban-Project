@@ -4,21 +4,69 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Header from "./components/Header";  
 import Tablero from "./components/Tablero";
+import { crearTablero as crearTableroApi } from "./api/kanbanApi";
+import { getTableros } from "./api/kanbanApi";
 
 export default function App() {
+  React.useEffect(() => {
+    async function cargarTableros() {
+      try {
+        const tablerosBD = await getTableros();
+        // Adaptar los datos para que tengan el mismo formato que el frontend espera
+        const adaptados = tablerosBD.map(t => ({
+          id: t.id,
+          nombre: t.titulo,
+          descripcion: t.descripcion,
+          columnas: []
+        }));
+        setTableros(adaptados);
+      } catch (err) {
+        console.error("Error al cargar tableros:", err.message);
+      }
+    }
+    cargarTableros();
+  }, []);
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [nuevoNombre, setNuevoNombre] = React.useState("");
+  const [nuevaDescripcion, setNuevaDescripcion] = React.useState("");
   const [vista, setVista] = React.useState("inicio");
   const [tableros, setTableros] = React.useState([]);
   const [tableroActivo, setTableroActivo] = React.useState(null);
 
-  const crearTablero = () => {
-    const nuevoTablero = {
-      id: Date.now(),
-      nombre: "Tablero sin nombre",
-      columnas: [],
-    };
-    setTableros([...tableros, nuevoTablero]);
-    setTableroActivo(nuevoTablero);
-    setVista("tablero");
+  const abrirModal = () => {
+    setNuevoNombre("");
+    setNuevaDescripcion("");
+    setModalVisible(true);
+  };
+
+  const cerrarModal = () => {
+    setModalVisible(false);
+  };
+
+  const crearTablero = async (e) => {
+    e && e.preventDefault();
+    if (!nuevoNombre.trim()) {
+      alert("El nombre del tablero es obligatorio");
+      return;
+    }
+    try {
+      const data = await crearTableroApi({
+        titulo: nuevoNombre,
+        descripcion: nuevaDescripcion
+      });
+      const nuevoTablero = {
+        id: data.id,
+        nombre: data.titulo,
+        descripcion: data.descripcion,
+        columnas: []
+      };
+      setTableros([...tableros, nuevoTablero]);
+      setTableroActivo(nuevoTablero);
+      setVista("tablero");
+      cerrarModal();
+    } catch (err) {
+      alert("Error al crear el tablero: " + err.message);
+    }
   };
 
   const volverInicio = () => {
@@ -33,10 +81,40 @@ export default function App() {
 
   return (
     <div className="app container-fluid p-0">
+      {/* Modal para crear tablero */}
+      {modalVisible && (
+        <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.3)' }} tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <form onSubmit={crearTablero}>
+                <div className="modal-header">
+                  <h5 className="modal-title">Nuevo tablero</h5>
+                  <button type="button" className="btn-close" onClick={cerrarModal}></button>
+                </div>
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <label className="form-label">Nombre</label>
+                    <input type="text" className="form-control" value={nuevoNombre} onChange={e => setNuevoNombre(e.target.value)} required />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Descripción</label>
+                    <textarea className="form-control" value={nuevaDescripcion} onChange={e => setNuevaDescripcion(e.target.value)} />
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" onClick={cerrarModal}>Cancelar</button>
+                  <button type="submit" className="btn btn-primary">Crear</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <Header 
         vista={vista} 
-        crearTablero={crearTablero} 
+        crearTablero={abrirModal} 
         volverInicio={volverInicio} 
       />
 
@@ -45,7 +123,7 @@ export default function App() {
           <>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h2>Tus tableros</h2>
-              <button className="btn btn-primary d-md-none" onClick={crearTablero}>+</button>
+              <button className="btn btn-primary d-md-none" onClick={abrirModal}>+</button>
             </div>
 
             <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
@@ -69,7 +147,7 @@ export default function App() {
                 <div 
                   className="card h-100 border-dashed text-center d-flex justify-content-center align-items-center cursor-pointer"
                   style={{ minHeight: "120px" }}
-                  onClick={crearTablero}
+                  onClick={abrirModal}
                 >
                   <div>
                     <h1>+</h1>
