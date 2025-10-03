@@ -1,0 +1,27 @@
+CREATE DATABASE kanban;
+USE kanban;
+
+CREATE TABLE tablero (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE columnas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    posicion INT NOT NULL,
+    tablero_id INT NOT NULL,
+    FOREIGN KEY (tablero_id) REFERENCES tablero(id) ON DELETE CASCADE
+);
+
+CREATE TABLE tareas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    columna_id INT NOT NULL,
+    posicion INT NOT NULL,
+    FOREIGN KEY (columna_id) REFERENCES columnas(id) ON DELETE CASCADE
+);
