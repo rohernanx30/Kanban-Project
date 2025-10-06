@@ -106,7 +106,20 @@ app.put('/api/v1/columnas/:id', async (req, res) => {
   try {
     const { nombre, posicion } = req.body;
     const db = await mysql.createConnection(dbConfig);
-    await db.execute('UPDATE columnas SET nombre = ?, posicion = ? WHERE id = ?', [nombre, posicion, req.params.id]);
+
+    const fields = [];
+    const values = [];
+    if (nombre !== undefined) {
+      fields.push('nombre = ?');
+      values.push(nombre);
+    }
+    if (posicion !== undefined) {
+      fields.push('posicion = ?');
+      values.push(posicion);
+    }
+    values.push(req.params.id);
+
+    await db.execute(`UPDATE columnas SET ${fields.join(', ')} WHERE id = ?`, values);
     const [columna] = await db.execute('SELECT * FROM columnas WHERE id = ?', [req.params.id]);
     res.json({ message: 'Columna actualizada', data: columna[0] });
   } catch (err) {
@@ -152,9 +165,26 @@ app.get('/api/v1/columnas/:columnaId/tareas', async (req, res) => {
 
 app.put('/api/v1/tareas/:id', async (req, res) => {
   try {
-    const { titulo, descripcion, posicion } = req.body;
+    const { titulo, descripcion, posicion, columna_id } = req.body;
     const db = await mysql.createConnection(dbConfig);
-    await db.execute('UPDATE tareas SET titulo = ?, descripcion = ?, posicion = ? WHERE id = ?', [titulo, descripcion, posicion, req.params.id]);
+
+    const fields = [];
+    const values = [];
+    if (titulo !== undefined) {
+      fields.push('titulo = ?');
+      values.push(titulo);
+    }
+    if (descripcion !== undefined) {
+      fields.push('descripcion = ?');
+      values.push(descripcion);
+    }
+    if (posicion !== undefined) {
+      fields.push('posicion = ?');
+      values.push(posicion);
+    }
+    values.push(req.params.id);
+
+    await db.execute(`UPDATE tareas SET ${fields.join(', ')} WHERE id = ?`, values);
     const [tarea] = await db.execute('SELECT * FROM tareas WHERE id = ?', [req.params.id]);
     res.json({ message: 'Tarea actualizada', data: tarea[0] });
   } catch (err) {

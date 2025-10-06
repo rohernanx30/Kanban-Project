@@ -4,10 +4,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Header from "./components/Header";  
 import Tablero from "./components/Tablero";
-import { crearTablero as crearTableroApi } from "./api/kanbanApi";
-import { getTableros } from "./api/kanbanApi";
+import { 
+  crearTablero as crearTableroApi, 
+  getTableros,
+  actualizarTablero as actualizarTableroApi,
+  eliminarTablero as eliminarTableroApi,
+  getColumnas,
+  getTareas,
+  actualizarTarea
+} from "./api/kanbanApi";
 
 export default function App() {
+  const [tableros, setTableros] = React.useState([]);
   React.useEffect(() => {
     async function cargarTableros() {
       try {
@@ -30,8 +38,29 @@ export default function App() {
   const [nuevoNombre, setNuevoNombre] = React.useState("");
   const [nuevaDescripcion, setNuevaDescripcion] = React.useState("");
   const [vista, setVista] = React.useState("inicio");
-  const [tableros, setTableros] = React.useState([]);
   const [tableroActivo, setTableroActivo] = React.useState(null);
+  const [columnas, setColumnas] = React.useState([]);
+
+  React.useEffect(() => {
+    async function cargarColumnas() {
+      if (tableroActivo) {
+        try {
+          const cols = await getColumnas(tableroActivo.id);
+          const columnasConTareas = await Promise.all(cols.map(async (col) => {
+            const tareas = await getTareas(col.id);
+            return { ...col, tareas: tareas.map(t => ({ id: t.id, texto: t.titulo, ...t })) };
+          }));
+          setColumnas(columnasConTareas);
+        } catch (err) { 
+          console.error("Error al cargar columnas:", err.message);
+          setColumnas([]); 
+        }
+      } else {
+        setColumnas([]);
+      }
+    }
+    cargarColumnas();
+  }, [tableroActivo]);
 
   const abrirModal = () => {
     setNuevoNombre("");
@@ -74,9 +103,26 @@ export default function App() {
     setTableroActivo(null);
   };
 
-  const actualizarTablero = (tableroActualizado) => {
-    setTableros(tableros.map(t => t.id === tableroActualizado.id ? tableroActualizado : t));
-    setTableroActivo(tableroActualizado);
+  const actualizarTablero = async (tableroActualizado) => {
+    try {
+      await actualizarTableroApi(tableroActualizado.id, { titulo: tableroActualizado.nombre, descripcion: tableroActualizado.descripcion });
+      setTableros(tableros.map(t => t.id === tableroActualizado.id ? tableroActualizado : t));
+      setTableroActivo(tableroActualizado);
+    } catch (err) {
+      alert("Error al actualizar el tablero: " + err.message);
+    }
+  };
+
+  const eliminarTablero = async (idTablero, e) => {
+    e.stopPropagation();
+    if (window.confirm("¿Estás seguro de que quieres eliminar este tablero?")) {
+      try {
+        await eliminarTableroApi(idTablero);
+        setTableros(tableros.filter(t => t.id !== idTablero));
+      } catch (err) {
+        alert("Error al eliminar el tablero: " + err.message);
+      }
+    }
   };
 
   return (
@@ -134,9 +180,15 @@ export default function App() {
                   onClick={() => { setTableroActivo(t); setVista("tablero"); }}
                 >
                   <div className="card h-100 shadow-sm cursor-pointer">
-                    <div className="card-body">
+                    <div className="card-body d-flex flex-column">
                       <h5 className="card-title">{t.nombre}</h5>
-                      <p className="card-text">Click para abrir</p>
+                      <p className="card-text text-muted mt-auto">Click para abrir</p>
+                      <button 
+                        className="btn btn-sm btn-outline-danger mt-2"
+                        onClick={(e) => eliminarTablero(t.id, e)}
+                      >
+                        Eliminar
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -161,7 +213,12 @@ export default function App() {
 
         {vista === "tablero" && tableroActivo && (
           <div className="overflow-auto">
-            <Tablero tablero={tableroActivo} actualizarTablero={actualizarTablero} />
+            <Tablero 
+              tablero={tableroActivo} 
+              actualizarTablero={actualizarTablero}
+              columnas={columnas}
+              setColumnas={setColumnas}
+            />
           </div>
         )}
       </main>

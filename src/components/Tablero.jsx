@@ -1,31 +1,12 @@
 import React from "react";
 import Columna from "./Columna";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { crearColumna, getColumnas } from '../api/kanbanApi';
+import { crearColumna, eliminarColumna as eliminarColumnaApi } from '../api/kanbanApi';
 
-export default function Tablero({ tablero, actualizarTablero }) {
+export default function Tablero({ tablero, actualizarTablero, columnas, setColumnas }) {
   const [nombre, setNombre] = React.useState(tablero.nombre);
-  const [columnas, setColumnas] = React.useState([]);
   const [modalColumna, setModalColumna] = React.useState(false);
-  const [nombreColumna, setNombreColumna] = React.useState("");
-
-  // Cargar columnas al montar el componente o cuando cambie el tablero
-  React.useEffect(() => {
-    async function cargar() {
-      try {
-        const cols = await getColumnas(tablero.id);
-        // Adaptar formato para frontend
-        setColumnas(cols.map(c => ({
-          id: c.id,
-          nombre: c.nombre,
-          tareas: []
-        })));
-      } catch (err) {
-        setColumnas([]);
-      }
-    }
-    if (tablero && tablero.id) cargar();
-  }, [tablero]);
+  const [nombreNuevaColumna, setNombreNuevaColumna] = React.useState("");
 
   const cambiarNombre = (e) => {
     setNombre(e.target.value);
@@ -33,7 +14,7 @@ export default function Tablero({ tablero, actualizarTablero }) {
   };
 
   const abrirModalColumna = () => {
-    setNombreColumna("");
+    setNombreNuevaColumna("");
     setModalColumna(true);
   };
 
@@ -43,13 +24,13 @@ export default function Tablero({ tablero, actualizarTablero }) {
 
   const agregarColumna = async (e) => {
     e && e.preventDefault();
-    if (!nombreColumna.trim()) {
+    if (!nombreNuevaColumna.trim()) {
       alert("El nombre de la columna es obligatorio");
       return;
     }
     try {
       const nuevaColumna = await crearColumna(tablero.id, {
-        nombre: nombreColumna,
+        nombre: nombreNuevaColumna,
         posicion: columnas.length + 1
       });
       const colAdaptada = {
@@ -64,8 +45,23 @@ export default function Tablero({ tablero, actualizarTablero }) {
     }
   };
 
-  const actualizarColumna = (columnaActualizada) => {
-    setColumnas(columnas.map(c => c.id === columnaActualizada.id ? columnaActualizada : c));
+  const eliminarColumna = async (idColumna) => {
+    if (window.confirm("¿Seguro que quieres eliminar esta columna y todas sus tareas?")) {
+      try {
+        await eliminarColumnaApi(idColumna);
+        setColumnas(columnas.filter(c => c.id !== idColumna));
+      } catch (err) {
+        alert("Error al eliminar la columna: " + err.message);
+      }
+    }
+  };
+
+  const setTareasEnColumna = (idColumna, nuevasTareas) => {
+    setColumnas(columnas.map(c => c.id === idColumna ? { ...c, tareas: nuevasTareas } : c));
+  };
+
+  const setNombreColumna = (idColumna, nuevoNombre) => {
+    setColumnas(columnas.map(c => c.id === idColumna ? { ...c, nombre: nuevoNombre } : c));
   };
 
   return (
@@ -76,6 +72,7 @@ export default function Tablero({ tablero, actualizarTablero }) {
           type="text"
           value={nombre}
           onChange={cambiarNombre}
+          onBlur={() => actualizarTablero({ ...tablero, nombre })}
           className="form-control form-control-lg fw-bold"
           placeholder="Nombre del tablero"
         />
@@ -85,10 +82,18 @@ export default function Tablero({ tablero, actualizarTablero }) {
       <div className="row flex-row flex-nowrap overflow-auto g-3">
         {columnas.map((col) => (
           <div key={col.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
-            <Columna
-              columna={col}
-              actualizarColumna={actualizarColumna}
-            />
+            <div className="position-relative">
+              <Columna
+                columna={col}
+                setTareas={(nuevasTareas) => setTareasEnColumna(col.id, nuevasTareas)}
+                setNombre={(nuevoNombre) => setNombreColumna(col.id, nuevoNombre)}
+              />
+              <button
+                onClick={() => eliminarColumna(col.id)}
+                className="btn btn-sm btn-danger position-absolute top-0 end-0 m-2"
+                style={{ zIndex: 10 }}
+              >✕</button>
+            </div>
           </div>
         ))}
 
@@ -118,7 +123,7 @@ export default function Tablero({ tablero, actualizarTablero }) {
                 <div className="modal-body">
                   <div className="mb-3">
                     <label className="form-label">Nombre de la columna</label>
-                    <input type="text" className="form-control" value={nombreColumna} onChange={e => setNombreColumna(e.target.value)} required />
+                    <input type="text" className="form-control" value={nombreNuevaColumna} onChange={e => setNombreNuevaColumna(e.target.value)} required />
                   </div>
                 </div>
                 <div className="modal-footer">

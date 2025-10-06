@@ -1,32 +1,22 @@
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { getTareas, crearTarea } from '../api/kanbanApi';
+import { crearTarea, actualizarTarea, eliminarTarea as eliminarTareaApi, actualizarColumna as actualizarColumnaApi } from '../api/kanbanApi';
 
-export default function Columna({ columna, actualizarColumna }) {
-  const [nombre, setNombre] = React.useState(columna.nombre);
-  const [tareas, setTareas] = React.useState([]);
+export default function Columna({ columna, setTareas, setNombre }) {
+  const { id, nombre, tareas } = columna;
   const [modalTarea, setModalTarea] = React.useState(false);
   const [nombreTarea, setNombreTarea] = React.useState("");
 
-  // Leer tareas al montar la columna
-  React.useEffect(() => {
-    async function cargarTareas() {
-      try {
-        const tareasBD = await getTareas(columna.id);
-        setTareas(tareasBD.map(t => ({
-          id: t.id,
-          texto: t.titulo
-        })));
-      } catch (err) {
-        setTareas([]);
-      }
-    }
-    if (columna && columna.id) cargarTareas();
-  }, [columna]);
-
   const cambiarNombre = (e) => {
     setNombre(e.target.value);
-    actualizarColumna({ ...columna, nombre: e.target.value, tareas });
+  };
+
+  const guardarCambioNombre = async () => {
+    try {
+      await actualizarColumnaApi(id, { nombre });
+    } catch (err) {
+      alert("Error al actualizar el nombre de la columna: " + err.message);
+    }
   };
 
   const abrirModalTarea = () => {
@@ -45,7 +35,7 @@ export default function Columna({ columna, actualizarColumna }) {
       return;
     }
     try {
-      const nuevaTareaBD = await crearTarea(columna.id, {
+      const nuevaTareaBD = await crearTarea(id, {
         titulo: nombreTarea,
         descripcion: "",
         posicion: tareas.length + 1
@@ -66,18 +56,34 @@ export default function Columna({ columna, actualizarColumna }) {
     setTareas(nuevasTareas);
   };
 
-  const eliminarTarea = (id) => {
-    const nuevasTareas = tareas.filter(t => t.id !== id);
-    setTareas(nuevasTareas);
+  const guardarCambioTarea = async (id, texto) => {
+    try {
+      await actualizarTarea(id, { titulo: texto });
+    } catch (err) {
+      alert("Error al actualizar la tarea: " + err.message);
+    }
+  };
+
+  const eliminarTarea = async (id) => {
+    if (window.confirm("¿Seguro que quieres eliminar esta tarea?")) {
+      try {
+        await eliminarTareaApi(id);
+        const nuevasTareas = tareas.filter(t => t.id !== id);
+        setTareas(nuevasTareas);
+      } catch (err) {
+        alert("Error al eliminar la tarea: " + err.message);
+      }
+    }
   };
 
   return (
-    <div className="card mb-3" style={{ minWidth: "250px", maxWidth: "250px" }}>
+    <div className="card mb-3 bg-light" style={{ minWidth: "250px", maxWidth: "250px" }}>
       {/* Nombre de la columna */}
       <input
         type="text"
         value={nombre}
         onChange={cambiarNombre}
+        onBlur={guardarCambioNombre}
         className="form-control fw-bold mb-2"
         placeholder="Nombre de columna"
       />
@@ -85,21 +91,18 @@ export default function Columna({ columna, actualizarColumna }) {
       {/* Lista de tareas */}
       <div className="d-flex flex-column gap-2 p-2">
         {tareas.map(t => (
-          <div key={t.id} className="d-flex align-items-center gap-2 bg-light rounded p-2">
+          <div key={t.id} className="d-flex align-items-center gap-2 bg-white rounded p-2 shadow-sm">
             <input
               type="text"
               value={t.texto}
+              onBlur={(e) => guardarCambioTarea(t.id, e.target.value)}
               onChange={(e) => cambiarTarea(t.id, e.target.value)}
-              className="form-control"
+              className="form-control border-0"
             />
-            <button 
-              onClick={() => eliminarTarea(t.id)} 
-              className="btn btn-danger btn-sm"
-            >
-              ✕
-            </button>
+            <button onClick={() => eliminarTarea(t.id)} className="btn btn-danger btn-sm">✕</button>
           </div>
         ))}
+      </div>
 
         {/* Botón agregar tarea */}
         <button 
@@ -133,7 +136,6 @@ export default function Columna({ columna, actualizarColumna }) {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }

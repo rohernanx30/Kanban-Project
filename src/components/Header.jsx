@@ -2,8 +2,13 @@ import logo from "../assets/icon.png";
 
 export default function Header({ vista, crearTablero, volverInicio }) {
     return (
-        <nav className="navbar navbar-expand-lg px-3">
-            <a className="navbar-brand d-flex align-items-center fw-bold" href="#">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+            <a 
+                className="navbar-brand d-flex align-items-center fw-bold" 
+                href="#"
+                onClick={(e) => { e.preventDefault(); volverInicio(); }}
+                style={{ cursor: 'pointer' }}
+            >
                 <img src={logo} alt="Logo" width="32" height="32" className="d-inline-block align-top me-2" />
                 TaskFlow
             </a>
@@ -23,7 +28,11 @@ export default function Header({ vista, crearTablero, volverInicio }) {
             <div className="collapse navbar-collapse d-none d-lg-flex justify-content-between">
                 <ul className="navbar-nav me-auto">
                     <li className="nav-item">
-                        <a className="nav-link" href="#">Inicio</a>
+                        <a 
+                            className="nav-link" 
+                            href="#"
+                            onClick={(e) => { e.preventDefault(); volverInicio(); }}
+                            style={{ cursor: 'pointer' }}>Inicio</a>
                     </li>
                     <li className="nav-item">
                         <a className="nav-link" href="#">Tablas</a>
@@ -58,7 +67,11 @@ export default function Header({ vista, crearTablero, volverInicio }) {
                 <div className="offcanvas-body">
                     <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">
                         <li className="nav-item">
-                            <a className="nav-link" href="#">Inicio</a>
+                            <a 
+                                className="nav-link" 
+                                href="#"
+                                onClick={(e) => { e.preventDefault(); volverInicio(); }}
+                                style={{ cursor: 'pointer' }}>Inicio</a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="#">Tablas</a>
