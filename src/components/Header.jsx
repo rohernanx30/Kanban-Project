@@ -1,6 +1,6 @@
 import logo from "../assets/icon.png";
 
-export default function Header({ vista, crearTablero, volverInicio }) {
+export default function Header({ vista, crearTablero, volverInicio, verTabla }) {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
             <a 
@@ -35,7 +35,7 @@ export default function Header({ vista, crearTablero, volverInicio }) {
                             style={{ cursor: 'pointer' }}>Inicio</a>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link" href="#">Tablas</a>
+                        <a className="nav-link" href="#" onClick={(e) => { e.preventDefault(); verTabla(); }}>Tablas</a>
                     </li>
                 </ul>
 
@@ -74,7 +74,7 @@ export default function Header({ vista, crearTablero, volverInicio }) {
                                 style={{ cursor: 'pointer' }}>Inicio</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">Tablas</a>
+                            <a className="nav-link" href="#" onClick={(e) => { e.preventDefault(); verTabla(); }}>Tablas</a>
                         </li>
                     </ul>
 

@@ -8,11 +8,11 @@ export async function getTareas(columnaId) {
   return data.data;
 }
 
-export async function crearTarea(columnaId, { titulo, descripcion, posicion }) {
+export async function crearTarea(columnaId, tareaData) {
   const res = await fetch(`${API_URL}/columnas/${columnaId}/tareas`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ titulo, descripcion, posicion })
+    body: JSON.stringify(tareaData)
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || 'Error al crear tarea');

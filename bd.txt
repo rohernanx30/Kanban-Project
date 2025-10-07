@@ -25,3 +25,13 @@ CREATE TABLE tareas (
     posicion INT NOT NULL,
     FOREIGN KEY (columna_id) REFERENCES columnas(id) ON DELETE CASCADE
 );
+
+///////////////////////////////////////////////////////////////////////////////
+USE kanban;
+
+ALTER TABLE tareas
+    ADD COLUMN fecha_limite DATE,
+    ADD COLUMN asignado_por VARCHAR(100),
+    ADD COLUMN asignado_a VARCHAR(100),
+    ADD COLUMN porcentaje_avance INT DEFAULT 0,
+    ADD COLUMN prioridad ENUM('Bajo', 'Medio', 'Alto');

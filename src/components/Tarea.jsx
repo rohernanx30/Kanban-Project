@@ -1,71 +1,57 @@
-import React from "react";
+import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function Columna({ columna, actualizarColumna }) {
-  const [nombre, setNombre] = React.useState(columna.nombre);
-  const [tareas, setTareas] = React.useState(columna.tareas || []);
+const getPriorityClass = (priority) => {
+  switch (priority) {
+    case 'Alto': return 'danger';
+    case 'Medio': return 'warning';
+    case 'Bajo': return 'success';
+    default: return 'secondary';
+  }
+};
 
-  const cambiarNombre = (e) => {
-    setNombre(e.target.value);
-    actualizarColumna({ ...columna, nombre: e.target.value, tareas });
-  };
-
-  const agregarTarea = () => {
-    const nuevaTarea = { id: Date.now(), texto: "Nueva tarea" };
-    const nuevasTareas = [...tareas, nuevaTarea];
-    setTareas(nuevasTareas);
-    actualizarColumna({ ...columna, nombre, tareas: nuevasTareas });
-  };
-
-  const cambiarTarea = (id, texto) => {
-    const nuevasTareas = tareas.map(t => t.id === id ? { ...t, texto } : t);
-    setTareas(nuevasTareas);
-    actualizarColumna({ ...columna, nombre, tareas: nuevasTareas });
-  };
-
-  const eliminarTarea = (id) => {
-    const nuevasTareas = tareas.filter(t => t.id !== id);
-    setTareas(nuevasTareas);
-    actualizarColumna({ ...columna, nombre, tareas: nuevasTareas });
-  };
-
+export default function Tarea({ tarea, onEdit, onDelete }) {
   return (
-    <div className="card mb-3" style={{ minWidth: "250px", maxWidth: "250px" }}>
-      {/* Nombre de la columna */}
-      <input
-        type="text"
-        value={nombre}
-        onChange={cambiarNombre}
-        placeholder="Nombre de columna"
-        className="form-control fw-bold mb-2"
-      />
+    <div className="card shadow-sm mb-2">
+      <div className="card-body">
+        <div className="d-flex justify-content-between align-items-start">
+          <h5 className="card-title mb-1">{tarea.titulo}</h5>
+          <span className={`badge bg-${getPriorityClass(tarea.prioridad)}`}>
+            {tarea.prioridad}
+          </span>
+        </div>
+        
+        <p className="card-text text-muted small">{tarea.descripcion}</p>
 
-      {/* Lista de tareas */}
-      <div className="d-flex flex-column gap-2 p-2">
-        {tareas.map(t => (
-          <div key={t.id} className="d-flex align-items-center bg-light rounded p-2">
-            <input
-              type="text"
-              value={t.texto}
-              onChange={(e) => cambiarTarea(t.id, e.target.value)}
-              className="form-control me-2 border-0 bg-light"
-            />
-            <button 
-              onClick={() => eliminarTarea(t.id)}
-              className="btn btn-danger btn-sm"
-            >
-              ✕
-            </button>
+        <div className="mb-2">
+            <span className="fw-bold small">Asignado a:</span> {tarea.asignado_a || 'N/A'}
+        </div>
+
+        {tarea.fecha_limite && (
+          <div className="text-danger small mb-2">
+            <strong>Límite:</strong> {new Date(tarea.fecha_limite).toLocaleDateString()}
           </div>
-        ))}
+        )}
 
-        {/* Botón agregar tarea */}
-        <button 
-          onClick={agregarTarea} 
-          className="btn btn-outline-primary mt-2"
-        >
-          + Agregar tarea
-        </button>
+        <div className="progress mb-2" style={{height: '10px'}}>
+            <div 
+                className="progress-bar" 
+                role="progressbar" 
+                style={{width: `${tarea.porcentaje_avance}%`}} 
+                aria-valuenow={tarea.porcentaje_avance}
+                aria-valuemin="0" 
+                aria-valuemax="100"
+            ></div>
+        </div>
+
+        <div className="d-flex justify-content-end gap-2">
+            <button className="btn btn-outline-primary btn-sm" onClick={() => onEdit(tarea)}>
+                Editar
+            </button>
+            <button className="btn btn-outline-danger btn-sm" onClick={() => onDelete(tarea.id)}>
+                Eliminar
+            </button>
+        </div>
       </div>
     </div>
   );

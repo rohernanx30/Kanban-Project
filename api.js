@@ -13,7 +13,6 @@ const dbConfig = {
   database: 'kanban'
 };
 
-// Tableros
 app.post('/api/v1/tableros', async (req, res) => {
   try {
     const { titulo, descripcion } = req.body;
@@ -76,7 +75,6 @@ app.delete('/api/v1/tableros/:id', async (req, res) => {
   }
 });
 
-// Columnas
 app.post('/api/v1/tableros/:tableroId/columnas', async (req, res) => {
   try {
     const { nombre, posicion } = req.body;
@@ -137,17 +135,41 @@ app.delete('/api/v1/columnas/:id', async (req, res) => {
   }
 });
 
-// Tareas
 app.post('/api/v1/columnas/:columnaId/tareas', async (req, res) => {
   try {
-    const { titulo, descripcion, posicion } = req.body;
+    const {
+      titulo,
+      descripcion,
+      posicion,
+      fecha_limite,
+      asignado_por,
+      asignado_a,
+      porcentaje_avance,
+      prioridad
+    } = req.body;
+
     const db = await mysql.createConnection(dbConfig);
-    const [result] = await db.execute(
-      'INSERT INTO tareas (titulo, descripcion, columna_id, posicion) VALUES (?, ?, ?, ?)',
-      [titulo, descripcion, req.params.columnaId, posicion]
-    );
+    const sqlQuery = `
+      INSERT INTO tareas 
+      (titulo, descripcion, posicion, columna_id, fecha_limite, asignado_por, asignado_a, porcentaje_avance, prioridad) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+    `;
+
+    const values = [
+      titulo,
+      descripcion,
+      posicion,
+      req.params.columnaId,
+      fecha_limite || null,
+      asignado_por,
+      asignado_a,
+      porcentaje_avance,
+      prioridad
+    ];
+    
+    const [result] = await db.execute(sqlQuery, values);
     const [tarea] = await db.execute('SELECT * FROM tareas WHERE id = ?', [result.insertId]);
-    res.json({ message: 'Tarea creada', data: tarea[0] });
+    res.status(201).json({ message: 'Tarea creada', data: tarea[0] });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -165,23 +187,30 @@ app.get('/api/v1/columnas/:columnaId/tareas', async (req, res) => {
 
 app.put('/api/v1/tareas/:id', async (req, res) => {
   try {
-    const { titulo, descripcion, posicion, columna_id } = req.body;
+    const { 
+        titulo, descripcion, posicion, columna_id,
+        fecha_limite, asignado_por, asignado_a, porcentaje_avance, prioridad
+    } = req.body;
+        
     const db = await mysql.createConnection(dbConfig);
 
     const fields = [];
     const values = [];
-    if (titulo !== undefined) {
-      fields.push('titulo = ?');
-      values.push(titulo);
+
+    if (titulo !== undefined) { fields.push('titulo = ?'); values.push(titulo); }
+    if (descripcion !== undefined) { fields.push('descripcion = ?'); values.push(descripcion); }
+    if (posicion !== undefined) { fields.push('posicion = ?'); values.push(posicion); }
+    if (columna_id !== undefined) { fields.push('columna_id = ?'); values.push(columna_id); }
+    if (fecha_limite !== undefined) { fields.push('fecha_limite = ?'); values.push(fecha_limite || null); }
+    if (asignado_por !== undefined) { fields.push('asignado_por = ?'); values.push(asignado_por); }
+    if (asignado_a !== undefined) { fields.push('asignado_a = ?'); values.push(asignado_a); }
+    if (porcentaje_avance !== undefined) { fields.push('porcentaje_avance = ?'); values.push(porcentaje_avance); }
+    if (prioridad !== undefined) { fields.push('prioridad = ?'); values.push(prioridad); }
+    
+    if (fields.length === 0) {
+        return res.status(400).json({ message: 'No hay campos para actualizar' });
     }
-    if (descripcion !== undefined) {
-      fields.push('descripcion = ?');
-      values.push(descripcion);
-    }
-    if (posicion !== undefined) {
-      fields.push('posicion = ?');
-      values.push(posicion);
-    }
+
     values.push(req.params.id);
 
     await db.execute(`UPDATE tareas SET ${fields.join(', ')} WHERE id = ?`, values);
