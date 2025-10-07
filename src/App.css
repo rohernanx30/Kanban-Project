@@ -1,33 +1,95 @@
-:root{
-    --primary-color: #997047;
+/* Paleta de colores inspirada en Canva */
+:root {
+    /* Colores primarios */
+    --canva-blue: #87CEEB;
+    --canva-lavender: #B8A7D9;
+    --canva-coral: #FFB6B3;
+    --canva-mint: #A8E6CF;
+    --canva-cream: #FFF5E6;
+    
+    /* Gradientes suaves */
+    --gradient-primary: linear-gradient(135deg, #87CEEB 0%, #B8A7D9 100%);
+    --gradient-secondary: linear-gradient(135deg, #FFB6B3 0%, #FFF5E6 100%);
+    --gradient-accent: linear-gradient(135deg, #A8E6CF 0%, #87CEEB 100%);
+    
+    /* Colores de estado */
+    --priority-high: #FF6B9D;
+    --priority-medium: #FFA726;
+    --priority-low: #66BB6A;
+    
+    /* Neutros modernos */
+    --text-primary: #2D3748;
+    --text-secondary: #718096;
+    --text-muted: #A0AEC0;
+    --border-light: #E2E8F0;
+    --bg-light: #F7FAFC;
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-* {  
-  font-family: 'Inter', sans-serif; 
-} 
+/* Tipografía global con Montserrat */
+* {
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
 
-body { 
-  background-color: #f6f7f8; 
-  color: #111418; 
-  min-height: 100vh; 
+body {
+    background: linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 100%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-weight: 400;
 }
 
 .app {
-  min-height: 100vh;       
-  display: flex;
-  flex-direction: column;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Botones modernos con gradientes */
 .btn-primary {
-    background-color: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
+    background: var(--gradient-primary) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 500 !important;
+    padding: 0.75rem 1.5rem !important;
+    box-shadow: var(--shadow-soft) !important;
+    transition: all 0.3s ease !important;
+    text-transform: none !important;
 }
 
+.btn-primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-medium) !important;
+    background: linear-gradient(135deg, #7BC4E5 0%, #A898D3 100%) !important;
+}
+
+.btn-outline-primary {
+    color: var(--canva-blue) !important;
+    border-color: var(--canva-blue) !important;
+    border-radius: 10px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-outline-primary:hover {
+    background: var(--canva-blue) !important;
+    border-color: var(--canva-blue) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Tarjetas modernas */
 .card {
-    background-color: #FFFFFF;
-    border: 1px solid #e0e0e0;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    background: #FFFFFF;
+    border: 1px solid var(--border-light);
+    border-radius: 16px !important;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
 }
 
 .btn-outline-dark {
@@ -39,4 +101,431 @@ body {
     color: #FFFFFF;
     background-color: #343a40;
     border-color: #343a40;
+}
+
+/* Badges de prioridad con colores Canva */
+.badge.bg-danger {
+    background: linear-gradient(135deg, var(--priority-high), #FF8A9B) !important;
+}
+
+.badge.bg-warning {
+    background: linear-gradient(135deg, var(--priority-medium), #FFB74D) !important;
+    color: var(--text-primary) !important;
+}
+
+.badge.bg-success {
+    background: linear-gradient(135deg, var(--priority-low), #81C784) !important;
+}
+
+.badge {
+    border-radius: 20px !important;
+    font-weight: 500 !important;
+    padding: 0.5em 0.75em !important;
+    font-size: 0.75rem !important;
+}
+
+/* Barras de progreso modernas */
+.progress {
+    height: 8px !important;
+    border-radius: 10px !important;
+    background-color: var(--bg-light) !important;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1) !important;
+}
+
+.progress-bar {
+    background: var(--gradient-accent) !important;
+    border-radius: 10px !important;
+    transition: width 0.6s ease !important;
+}
+
+/* Inputs y formularios */
+.form-control {
+    border-radius: 12px !important;
+    border: 2px solid var(--border-light) !important;
+    padding: 0.75rem 1rem !important;
+    font-weight: 400 !important;
+    transition: all 0.3s ease !important;
+}
+
+.form-control:focus {
+    border-color: var(--canva-blue) !important;
+    box-shadow: 0 0 0 0.2rem rgba(135, 206, 235, 0.25) !important;
+}
+
+/* Modales modernos */
+.modal-content {
+    border-radius: 20px !important;
+    border: none !important;
+    box-shadow: var(--shadow-medium) !important;
+}
+
+.modal-header {
+    background: var(--gradient-primary) !important;
+    color: white !important;
+    border-radius: 20px 20px 0 0 !important;
+    border-bottom: none !important;
+}
+
+.modal-title {
+    font-weight: 600 !important;
+}
+
+/* Animaciones suaves */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Hover effects para interactividad */
+.task-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Columnas del Kanban */
+.kanban-column {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid var(--border-light);
+    min-height: 400px;
+    transition: all 0.3s ease;
+}
+
+.kanban-column:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+}
+
+.column-header {
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    padding: 1rem;
+    font-weight: 600;
+}
+
+/* Iconos con estilo */
+.icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.icon-todo {
+    background: linear-gradient(135deg, #FFB6B3, #FFF5E6);
+    color: var(--priority-medium);
+}
+
+.icon-progress {
+    background: linear-gradient(135deg, #87CEEB, #B8A7D9);
+    color: white;
+}
+
+.icon-done {
+    background: linear-gradient(135deg, #A8E6CF, #87CEEB);
+    color: white;
+}
+
+/* Navbar moderna */
+.navbar {
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-medium) !important;
+}
+
+/* Estilos para el scrollbar personalizado */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-light);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--canva-blue), var(--canva-lavender));
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #7BC4E5, #A898D3);
+}
+
+/* Transiciones globales suaves */
+* {
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* Estados de focus mejorados */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--canva-blue) !important;
+    box-shadow: 0 0 0 0.2rem rgba(135, 206, 235, 0.25) !important;
+    transform: translateY(-1px);
+}
+
+/* Efectos de hover para botones */
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Loading animation */
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.loading {
+    animation: pulse 2s infinite;
+}
+
+/* Mejoras responsive */
+@media (max-width: 768px) {
+    .kanban-column {
+        min-width: 280px !important;
+        max-width: 280px !important;
+    }
+    
+    .modal-lg {
+        max-width: 95% !important;
+        margin: 1rem auto !important;
+    }
+    
+    .container-fluid {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+
+/* Estilos para elementos vacíos */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Tooltips personalizados */
+.tooltip {
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.tooltip-inner {
+    background: var(--text-primary) !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+}
+
+/* Animación de entrada para las tarjetas */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.task-card {
+    animation: slideInUp 0.4s ease-out;
+}
+
+/* Efectos de glassmorphism */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Estilos para pantallas de alta densidad */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .card, .btn, .form-control {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* Footer styles */
+footer {
+    margin-top: auto;
+}
+
+.social-link {
+    position: relative;
+    overflow: hidden;
+}
+
+.social-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.social-link:hover::before {
+    transform: translateX(100%);
+}
+
+/* Kodigo logo custom styles */
+.kodigo-icon {
+    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+.social-link img {
+    transition: all 0.3s ease;
+}
+
+.social-link:hover img {
+    transform: scale(1.1);
+    filter: brightness(1.2) contrast(1.2) saturate(1.1);
+}
+
+/* Layout adjustments */
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Footer responsividad */
+@media (max-width: 768px) {
+    footer .row > div {
+        text-align: center !important;
+        margin-bottom: 1.5rem;
+    }
+    
+    footer .d-flex {
+        justify-content: center !important;
+    }
+    
+    footer .text-lg-end {
+        text-align: center !important;
+    }
+    
+    footer .social-link {
+        width: 44px !important;
+        height: 44px !important;
+    }
+    
+    footer {
+        margin-top: 1rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    footer {
+        padding: 2rem 1rem !important;
+    }
+    
+    footer .container-fluid {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    footer h6 {
+        font-size: 1rem !important;
+    }
+    
+    footer .small {
+        font-size: 0.8rem !important;
+    }
+}
+
+/* Animación para los puntos decorativos */
+@keyframes pulse-dots {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.2);
+    }
+}
+
+footer .d-flex gap-2 > div:nth-child(2) {
+    animation: pulse-dots 2s infinite;
+    animation-delay: 0.3s;
+}
+
+/* Efecto hover para el footer completo */
+footer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 -8px 16px -4px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo para los enlaces del footer */
+footer a {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+footer a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.6);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+footer a:hover::after {
+    width: 100%;
 }

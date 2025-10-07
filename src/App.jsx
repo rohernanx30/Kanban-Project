@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from "./components/Header";  
 import Tablero from "./components/Tablero";
 import VistaTabla from "./components/VistaTabla";
+import Footer from "./components/Footer";
 import { 
   crearTablero as crearTableroApi, 
   getTableros,
@@ -18,6 +19,14 @@ import {
 
 export default function App() {
   const [tableros, setTableros] = React.useState([]);
+
+  // Aplicar clases al body para el diseño global
+  React.useEffect(() => {
+    document.body.className = 'fade-in-up';
+    return () => {
+      document.body.className = '';
+    };
+  }, []);
   React.useEffect(() => {
     async function cargarTableros() {
       try {
@@ -226,9 +235,7 @@ export default function App() {
         )}
       </main>
 
-      <footer className="footer text-center py-3 bg-light mt-auto">
-        <p className="mb-0">© 2025 TaskFlow. Todos los derechos reservados.</p>
-      </footer>
+      <Footer />
       
     </div>
   );

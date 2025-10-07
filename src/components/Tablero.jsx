@@ -65,70 +65,213 @@ export default function Tablero({ tablero, actualizarTablero, columnas, setColum
   };
 
   return (
-    <div className="container-fluid mt-3">
+    <div className="container-fluid px-4 py-3 fade-in-up">
       {/* Título del tablero */}
-      <div className="mb-3">
-        <input
-          type="text"
-          value={nombre}
-          onChange={cambiarNombre}
-          onBlur={() => actualizarTablero({ ...tablero, nombre })}
-          className="form-control form-control-lg fw-bold"
-          placeholder="Nombre del tablero"
-        />
+      <div className="mb-4">
+        <div className="d-flex align-items-center mb-3">
+          <div className="icon-wrapper me-3" style={{
+            background: 'linear-gradient(135deg, #87CEEB, #B8A7D9)',
+            width: '48px',
+            height: '48px',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <i className="bi bi-clipboard-data text-white" style={{ fontSize: '1.2rem' }}></i>
+          </div>
+          <div className="flex-grow-1">
+            <input
+              type="text"
+              value={nombre}
+              onChange={cambiarNombre}
+              onBlur={() => actualizarTablero({ ...tablero, nombre })}
+              className="form-control form-control-lg fw-bold border-0 bg-transparent"
+              placeholder="Nombre del tablero"
+              style={{ 
+                fontSize: '1.75rem',
+                color: 'var(--text-primary)',
+                boxShadow: 'none'
+              }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Columnas Kanban */}
-      <div className="row flex-row flex-nowrap overflow-auto g-3">
-        {columnas.map((col) => (
-          <div key={col.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
-            <div className="position-relative">
+      <div className="row g-4" style={{ minHeight: '70vh' }}>
+        <div className="d-flex flex-row overflow-auto pb-3" style={{ gap: '1.5rem', minHeight: '500px' }}>
+          {columnas.map((col, index) => (
+            <div key={col.id} className="kanban-column position-relative" style={{ 
+              minWidth: '320px',
+              maxWidth: '320px',
+              flexShrink: 0
+            }}>
               <Columna
                 columna={col}
                 setTareas={(nuevasTareas) => setTareasEnColumna(col.id, nuevasTareas)}
                 setNombre={(nuevoNombre) => setNombreColumna(col.id, nuevoNombre)}
+                index={index}
               />
               <button
                 onClick={() => eliminarColumna(col.id)}
-                className="btn btn-sm btn-danger position-absolute top-0 end-0 m-2"
-                style={{ zIndex: 10 }}
-              >✕</button>
+                className="btn btn-sm position-absolute"
+                style={{ 
+                  top: '8px',
+                  right: '8px',
+                  zIndex: 10,
+                  background: 'rgba(255, 107, 157, 0.1)',
+                  border: '1px solid rgba(255, 107, 157, 0.3)',
+                  color: 'var(--priority-high)',
+                  borderRadius: '8px',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'var(--priority-high)';
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'rgba(255, 107, 157, 0.1)';
+                  e.target.style.color = 'var(--priority-high)';
+                }}
+              >
+                <i className="bi bi-x" style={{ fontSize: '1rem' }}></i>
+              </button>
             </div>
-          </div>
-        ))}
+          ))}
 
-        {/* Botón para agregar columna */}
-        <div className="col-12 col-sm-6 col-md-4 col-lg-3">
+          {/* Botón para agregar columna */}
           <div 
-            className="card text-center p-3 d-flex align-items-center justify-content-center"
-            style={{ minHeight: "200px", cursor: "pointer", border: "2px dashed #6c757d" }}
+            className="d-flex align-items-center justify-content-center text-center"
+            style={{ 
+              minWidth: '320px',
+              maxWidth: '320px',
+              flexShrink: 0,
+              minHeight: '400px',
+              background: 'rgba(255, 255, 255, 0.5)',
+              border: '2px dashed var(--border-light)',
+              borderRadius: '16px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
             onClick={abrirModalColumna}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.8)';
+              e.target.style.borderColor = 'var(--canva-blue)';
+              e.target.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.5)';
+              e.target.style.borderColor = 'var(--border-light)';
+              e.target.style.transform = 'translateY(0)';
+            }}
           >
-            <span className="fs-1 text-muted">+</span>
-            <p className="text-muted mt-2 mb-0">Agregar columna</p>
+            <div>
+              <div className="mb-3" style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #87CEEB, #B8A7D9)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto'
+              }}>
+                <i className="bi bi-plus-lg text-white" style={{ fontSize: '1.5rem' }}></i>
+              </div>
+              <h5 className="fw-600" style={{ color: 'var(--text-primary)' }}>Agregar columna</h5>
+              <p className="text-muted mb-0">Crea una nueva columna para organizar tus tareas</p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Modal para agregar columna */}
       {modalColumna && (
-        <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.3)' }} tabIndex="-1">
-          <div className="modal-dialog">
+        <div className="modal fade show" style={{ 
+          display: 'block', 
+          background: 'rgba(0,0,0,0.4)',
+          backdropFilter: 'blur(4px)'
+        }} tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <form onSubmit={agregarColumna}>
-                <div className="modal-header">
-                  <h5 className="modal-title">Nueva columna</h5>
-                  <button type="button" className="btn-close" onClick={cerrarModalColumna}></button>
+                <div className="modal-header border-0">
+                  <div className="d-flex align-items-center">
+                    <div className="icon-wrapper me-3" style={{
+                      background: 'linear-gradient(135deg, #87CEEB, #B8A7D9)',
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <i className="bi bi-columns-gap text-white"></i>
+                    </div>
+                    <h5 className="modal-title fw-600 mb-0">Nueva columna</h5>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="btn-close"
+                    onClick={cerrarModalColumna}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      fontSize: '1.2rem'
+                    }}
+                  ></button>
                 </div>
-                <div className="modal-body">
+                <div className="modal-body px-4 py-3">
                   <div className="mb-3">
-                    <label className="form-label">Nombre de la columna</label>
-                    <input type="text" className="form-control" value={nombreNuevaColumna} onChange={e => setNombreNuevaColumna(e.target.value)} required />
+                    <label className="form-label fw-500" style={{ color: 'var(--text-primary)' }}>
+                      Nombre de la columna
+                    </label>
+                    <input 
+                      type="text" 
+                      className="form-control" 
+                      value={nombreNuevaColumna} 
+                      onChange={e => setNombreNuevaColumna(e.target.value)} 
+                      placeholder="Ej: Por hacer, En progreso, Completado..."
+                      required 
+                      autoFocus
+                      style={{
+                        borderRadius: '12px',
+                        border: '2px solid var(--border-light)',
+                        padding: '0.75rem 1rem'
+                      }}
+                    />
                   </div>
                 </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={cerrarModalColumna}>Cancelar</button>
-                  <button type="submit" className="btn btn-primary">Agregar</button>
+                <div className="modal-footer border-0 px-4 pb-4">
+                  <button 
+                    type="button" 
+                    className="btn btn-outline-secondary me-2"
+                    onClick={cerrarModalColumna}
+                    style={{
+                      borderRadius: '10px',
+                      padding: '0.5rem 1.5rem',
+                      fontWeight: '500'
+                    }}
+                  >
+                    <i className="bi bi-x-circle me-2"></i>Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary"
+                    style={{
+                      borderRadius: '10px',
+                      padding: '0.5rem 1.5rem',
+                      fontWeight: '500'
+                    }}
+                  >
+                    <i className="bi bi-plus-circle me-2"></i>Agregar
+                  </button>
                 </div>
               </form>
             </div>
