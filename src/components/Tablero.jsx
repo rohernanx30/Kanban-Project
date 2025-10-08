@@ -59,10 +59,37 @@ export default function Tablero({ tablero, actualizarTablero, columnas, setColum
     }
   };
 
-  // Actualiza tareas en columna especifica
-  const setTareasEnColumna = (idColumna, nuevasTareas) => {
-    setColumnas(columnas.map(c => c.id === idColumna ? { ...c, tareas: nuevasTareas } : c));
-  };
+  // Actualiza tareas en columna especifica (optimizado para manejar callbacks)
+  const setTareasEnColumna = React.useCallback((idColumna, nuevasTareas) => {
+    setColumnas(prevColumnas => {
+      // Encontrar el índice de la columna a actualizar
+      const colIndex = prevColumnas.findIndex(c => c.id === idColumna);
+      if (colIndex === -1) {
+        console.warn(`[Tablero] Columna ${idColumna} no encontrada`);
+        return prevColumnas;
+      }
+      
+      const colActual = prevColumnas[colIndex];
+      
+      // Si nuevasTareas es una función, ejecutarla con las tareas actuales
+      const tareasFinales = typeof nuevasTareas === 'function' 
+        ? nuevasTareas(colActual.tareas) 
+        : nuevasTareas;
+      
+      // Verificar si realmente cambiaron las tareas
+      if (JSON.stringify(colActual.tareas) === JSON.stringify(tareasFinales)) {
+        console.log(`[Tablero] Sin cambios reales en columna ${idColumna}, evitando actualización`);
+        return prevColumnas;
+      }
+      
+      // Crear nuevo array solo modificando la columna afectada
+      const nuevasColumnas = [...prevColumnas];
+      nuevasColumnas[colIndex] = { ...colActual, tareas: tareasFinales };
+      
+      console.log(`[Tablero] Columna ${idColumna} actualizada con ${tareasFinales.length} tareas`);
+      return nuevasColumnas;
+    });
+  }, []);
 
   // Actualiza nombre de columna especifica
   const setNombreColumna = (idColumna, nuevoNombre) => {
