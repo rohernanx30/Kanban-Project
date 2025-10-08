@@ -12,6 +12,9 @@ const styles = {
   }
 };
 
+// Helper para comparar IDs sin problemas de tipo (string vs number)
+const idsIguales = (a, b) => String(a) === String(b);
+
 const initialTareaState = {
   titulo: "",
   descripcion: "",
@@ -26,36 +29,38 @@ export default function Columna({ columna, setTareas, setNombre, todasLasColumna
   const { id, nombre } = columna;
   const tareas = Array.isArray(columna.tareas) ? columna.tareas : [];
 
+  // Lista defensiva sin duplicados para evitar render doble por estados transitorios
+  const tareasUnicas = React.useMemo(() => {
+    const seen = new Set();
+    return tareas.filter(t => {
+      const k = String(t?.id);
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  }, [tareas]);
+
   // Drag and drop: escucha eventos globales para actualizar tareas visualmente y sincronizar con la base de datos
   React.useEffect(() => {
     const handleActualizacionVisualInmediata = (event) => {
       const { sourceColId, destColId, tareaId, tarea } = event.detail;
-      if (id !== sourceColId && id !== destColId) return;
-      if (id === sourceColId) {
-        setTareas(prevTareas => prevTareas.filter(t => t.id !== tareaId));
+      if (!idsIguales(id, sourceColId) && !idsIguales(id, destColId)) return;
+      if (idsIguales(id, sourceColId)) {
+        // Remover por ID con comparación robusta
+        setTareas(prevTareas => prevTareas.filter(t => !idsIguales(t.id, tareaId)));
       }
-      if (id === destColId) {
+      if (idsIguales(id, destColId)) {
         setTareas(prevTareas => {
-          const existe = prevTareas.some(t => t.id === tareaId);
+          // Evitar duplicados por diferencias de tipo de ID
+          const existe = prevTareas.some(t => idsIguales(t.id, tareaId));
           if (existe) return prevTareas;
-          return [...prevTareas, { ...tarea, columna_id: destColId }];
+          // Deduplicar por si algún estado previo ya tenía la tarea
+          const sinDuplicados = prevTareas.filter(t => !idsIguales(t.id, tareaId));
+          return [...sinDuplicados, { ...tarea, columna_id: destColId }];
         });
       }
     };
-    // Drag and drop: recarga tareas desde la API cuando se mueve una tarea
-    const handleTareaMovida = async (event) => {
-      const { sourceColId, destColId, tareaId } = event.detail;
-      if (sourceColId === id || destColId === id) {
-        try {
-          const nuevasTareas = await getTareas(id); // API: obtener tareas actualizadas
-          if (Array.isArray(nuevasTareas)) {
-            setTareas(nuevasTareas);
-          }
-        } catch (error) {
-          // Si falla la API, no se actualiza la columna
-        }
-      }
-    };
+    // Nota: Eliminado el listener 'tareaMovida' para evitar recargas duplicadas.
     // Drag and drop: recarga completa con throttling
     const handleRecargaCompleta = async () => {
       const ahora = Date.now();
@@ -81,97 +86,67 @@ export default function Columna({ columna, setTareas, setNombre, todasLasColumna
       }
     };
 
-    // Manejar eventos de inicio de arrastre - versión optimizada
+    // Manejar eventos de inicio de arrastre -  
     const handleInicioArrastre = async (event) => {
+      // Solo reaccionar si la columna es la de origen
+      const { tareaId, columnaId } = event.detail;
+      if (!idsIguales(columnaId, id)) return;
       console.log(`Columna ${id} detectó inicio de arrastre`);
-      // No hacemos peticiones al inicio del arrastre para mejorar fluidez
-      // Las tareas se recargarán al final del proceso cuando sea necesario
-      
-      // Podemos marcar la tarea visualmente como "en arrastre" si es de esta columna
-      const { tareaId, columnaId } = event.detail;
-      if (columnaId === id) {
-        // La tarea pertenece a esta columna, podemos marcarla como "en arrastre"
-        console.log(`Tarea ${tareaId} comenzó a arrastrarse desde columna ${id}`);
-      }
+      console.log(`Tarea ${tareaId} comenzó a arrastrarse desde columna ${id}`);
     };
 
-    // Manejar eventos durante el arrastre - versión optimizada
-    const handleDuranteArrastre = async (event) => {
-      // Aquí no hacemos llamadas a la API durante el arrastre
-      // Solo actualizaremos visualmente si es necesario
-      console.log(`Columna ${id} detectó arrastre en proceso`);
-      
-      // No hacemos peticiones durante el arrastre para mejorar fluidez
-      // Solo aplicamos efectos visuales si es necesario
-      const { tareaId, columnaId, posicionX, posicionY } = event.detail;
-      
-      // Podemos aplicar efectos visuales sin recargar datos
-      // Por ejemplo, resaltar la columna cuando el cursor está sobre ella
-    };
 
-    // Manejar eventos de fin de arrastre - versión optimizada
+    // Manejar eventos de fin de arrastre -  
     const handleFinArrastre = async (event) => {
-      console.log(`Columna ${id} detectó fin de arrastre`);
       const { tareaId, columnaId } = event.detail;
-      
-      // Al final del arrastre solo recargamos si la columna es el origen
-      // Las actualizaciones completas se harán cuando se complete el drop
-      if (columnaId === id) {
-        console.log(`Tarea ${tareaId} terminó de arrastrarse desde columna ${id}`);
-      }
+      if (!idsIguales(columnaId, id)) return;
+      console.log(`Columna ${id} detectó fin de arrastre`);
+      console.log(`Tarea ${tareaId} terminó de arrastrarse desde columna ${id}`);
     };
     
-    // Manejar eventos de inicio de movimiento - versión optimizada
+    // Manejar eventos de inicio de movimiento -  
     const handleIniciandoMovimiento = (event) => {
-      // No hacemos peticiones aquí, solo aplicamos efectos visuales si es necesario
-      console.log(`Columna ${id} detectó inicio de movimiento de tarea`);
       const { sourceColId, destColId, tareaId } = event.detail;
-      
-      // Solo aplicamos efectos visuales si esta columna es origen o destino
-      if (id === sourceColId || id === destColId) {
+      // Solo si esta columna es origen o destino
+      if (idsIguales(id, sourceColId) || idsIguales(id, destColId)) {
+        console.log(`Columna ${id} detectó inicio de movimiento de tarea`);
         console.log(`Columna ${id} involucrada en el movimiento de la tarea ${tareaId}`);
       }
     };
     
-    // Manejar eventos de fin de movimiento (después de actualizar BD) - versión optimizada
+    // Manejar eventos de fin de movimiento (después de actualizar BD) -  
     const handleMovimientoCompletado = async (event) => {
+      const { sourceColId, destColId } = event.detail;
+      // Solo origen o destino deben reaccionar
+      if (!idsIguales(id, sourceColId) && !idsIguales(id, destColId)) return;
+
       console.log(`Columna ${id} detectó fin de movimiento de tarea`);
-      const { sourceColId, destColId, tareaId, exitoso, tarea } = event.detail;
-      
-      // Solo actualizamos si esta columna es origen o destino del movimiento
-      if (id !== sourceColId && id !== destColId) return;
-      
       try {
-        // Aplicamos un pequeño retraso para evitar múltiples peticiones simultáneas
-        // y mejorar la percepción de fluidez
+        // Pequeño desfase: origen primero, destino después
         setTimeout(async () => {
           const nuevasTareas = await getTareas(id);
           if (Array.isArray(nuevasTareas)) {
             setTareas(nuevasTareas);
             console.log(`Columna ${id} actualizada después de completar movimiento`);
           }
-        }, id === sourceColId ? 100 : 200); // Pequeño desfase entre columnas
+        }, idsIguales(id, sourceColId) ? 100 : 200);
       } catch (error) {
         console.error(`Error al recargar columna ${id} después de completar movimiento:`, error);
       }
     };
     
     // Registrar los event listeners
-    window.addEventListener('tareaMovida', handleTareaMovida);
     window.addEventListener('recargaCompletaTablero', handleRecargaCompleta);
     window.addEventListener('inicioArrastreGlobal', handleInicioArrastre);
-    window.addEventListener('duranteArrastreGlobal', handleDuranteArrastre);
+
     window.addEventListener('finArrastreGlobal', handleFinArrastre);
     window.addEventListener('iniciandoMovimiento', handleIniciandoMovimiento);
     window.addEventListener('movimientoCompletado', handleMovimientoCompletado);
     window.addEventListener('actualizacionVisualInmediata', handleActualizacionVisualInmediata);
     
-    // Limpiar los event listeners cuando se desmonte el componente
     return () => {
-      window.removeEventListener('tareaMovida', handleTareaMovida);
       window.removeEventListener('recargaCompletaTablero', handleRecargaCompleta);
       window.removeEventListener('inicioArrastreGlobal', handleInicioArrastre);
-      window.removeEventListener('duranteArrastreGlobal', handleDuranteArrastre);
       window.removeEventListener('finArrastreGlobal', handleFinArrastre);
       window.removeEventListener('iniciandoMovimiento', handleIniciandoMovimiento);
       window.removeEventListener('movimientoCompletado', handleMovimientoCompletado);
@@ -346,7 +321,7 @@ export default function Columna({ columna, setTareas, setNombre, todasLasColumna
     
     console.log(`Tarea arrastrada: ${tarea.titulo} desde columna ${sourceColId} a columna ${id}`);
     
-    if (sourceColId === id) {
+    if (idsIguales(sourceColId, id)) {
       console.log('La tarea ya está en esta columna');
       return;
     }
@@ -408,26 +383,9 @@ export default function Columna({ columna, setTareas, setNombre, todasLasColumna
       try {
         await actualizarTarea(tarea.id, { columna_id: id });
         console.log('Tarea actualizada en la BD directamente desde Columna');
-        
-        // Recargar ambas columnas
-        const nuevasTareas = await getTareas(id);
-        
-        if (Array.isArray(nuevasTareas)) {
-          setTareas(nuevasTareas);
-          console.log('Tareas recargadas en la columna destino');
-        }
-        
+
+        // No recargar aquí: dejemos que movimientoCompletado gestione la recarga
         if (window.dispatchEvent) {
-          // Notificar a columnas específicas
-          window.dispatchEvent(new CustomEvent('tareaMovida', {
-            detail: { 
-              sourceColId, 
-              destColId: id,
-              tareaId: tarea.id
-            }
-          }));
-          
-          // Notificar a todas las columnas con información detallada
           window.dispatchEvent(new CustomEvent('movimientoCompletado', {
             detail: {
               sourceColId,
@@ -437,12 +395,8 @@ export default function Columna({ columna, setTareas, setNombre, todasLasColumna
               tarea: tarea
             }
           }));
-          
-          // Recargar todo el tablero
-          window.dispatchEvent(new CustomEvent('recargaCompletaTablero'));
-          console.log('Evento de recarga completa disparado');
         }
-        
+
       } catch (error) {
         console.error('Error al actualizar la tarea en la BD:', error);
         alert("Error al mover la tarea. Por favor, inténtalo de nuevo.");
@@ -519,7 +473,7 @@ export default function Columna({ columna, setTareas, setNombre, todasLasColumna
 
       <div className="flex-grow-1 p-3 overflow-auto" style={{ maxHeight: '500px' }}>
         <div className="d-flex flex-column gap-2">
-          {tareas.map(t => (
+          {tareasUnicas.map(t => (
             <Tarea 
               key={t.id} 
               tarea={t} 
@@ -551,7 +505,7 @@ export default function Columna({ columna, setTareas, setNombre, todasLasColumna
               }}
             />
           ))}
-          {tareas.length === 0 && (
+          {tareasUnicas.length === 0 && (
             <div className="text-center py-4">
               <div className="mb-3" style={{
                 width: '48px',

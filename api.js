@@ -13,10 +13,13 @@ const dbConfig = {
   database: 'kanban'
 };
 
+// Usar pool de conexiones para evitar demasiadas conexiones simultáneas
+const pool = mysql.createPool(dbConfig);
+
 app.post('/api/v1/tableros', async (req, res) => {
   try {
     const { titulo, descripcion } = req.body;
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
     const [result] = await db.execute(
       'INSERT INTO tablero (titulo, descripcion) VALUES (?, ?)',
       [titulo, descripcion]
@@ -30,7 +33,7 @@ app.post('/api/v1/tableros', async (req, res) => {
 
 app.get('/api/v1/tableros', async (req, res) => {
   try {
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
     const [tableros] = await db.execute('SELECT * FROM tablero');
     res.json({ data: tableros });
   } catch (err) {
@@ -40,7 +43,7 @@ app.get('/api/v1/tableros', async (req, res) => {
 
 app.get('/api/v1/tableros/:id', async (req, res) => {
   try {
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
     const [tablero] = await db.execute('SELECT * FROM tablero WHERE id = ?', [req.params.id]);
     const [columnas] = await db.execute('SELECT * FROM columnas WHERE tablero_id = ?', [req.params.id]);
     for (const columna of columnas) {
@@ -56,7 +59,7 @@ app.get('/api/v1/tableros/:id', async (req, res) => {
 app.put('/api/v1/tableros/:id', async (req, res) => {
   try {
     const { titulo, descripcion } = req.body;
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
     await db.execute('UPDATE tablero SET titulo = ?, descripcion = ? WHERE id = ?', [titulo, descripcion, req.params.id]);
     const [tablero] = await db.execute('SELECT * FROM tablero WHERE id = ?', [req.params.id]);
     res.json({ message: 'Tablero actualizado', data: tablero[0] });
@@ -67,7 +70,7 @@ app.put('/api/v1/tableros/:id', async (req, res) => {
 
 app.delete('/api/v1/tableros/:id', async (req, res) => {
   try {
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
     await db.execute('DELETE FROM tablero WHERE id = ?', [req.params.id]);
     res.json({ message: 'Eliminado correctamente' });
   } catch (err) {
@@ -78,7 +81,7 @@ app.delete('/api/v1/tableros/:id', async (req, res) => {
 app.post('/api/v1/tableros/:tableroId/columnas', async (req, res) => {
   try {
     const { nombre, posicion } = req.body;
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
     const [result] = await db.execute(
       'INSERT INTO columnas (nombre, posicion, tablero_id) VALUES (?, ?, ?)',
       [nombre, posicion, req.params.tableroId]
@@ -92,7 +95,7 @@ app.post('/api/v1/tableros/:tableroId/columnas', async (req, res) => {
 
 app.get('/api/v1/tableros/:tableroId/columnas', async (req, res) => {
   try {
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
     const [columnas] = await db.execute('SELECT * FROM columnas WHERE tablero_id = ?', [req.params.tableroId]);
     res.json({ data: columnas });
   } catch (err) {
@@ -103,7 +106,7 @@ app.get('/api/v1/tableros/:tableroId/columnas', async (req, res) => {
 app.put('/api/v1/columnas/:id', async (req, res) => {
   try {
     const { nombre, posicion } = req.body;
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
 
     const fields = [];
     const values = [];
@@ -127,7 +130,7 @@ app.put('/api/v1/columnas/:id', async (req, res) => {
 
 app.delete('/api/v1/columnas/:id', async (req, res) => {
   try {
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
     await db.execute('DELETE FROM columnas WHERE id = ?', [req.params.id]);
     res.json({ message: 'Eliminado correctamente' });
   } catch (err) {
@@ -148,7 +151,7 @@ app.post('/api/v1/columnas/:columnaId/tareas', async (req, res) => {
       prioridad
     } = req.body;
 
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
     const sqlQuery = `
       INSERT INTO tareas 
       (titulo, descripcion, posicion, columna_id, fecha_limite, asignado_por, asignado_a, porcentaje_avance, prioridad) 
@@ -177,7 +180,7 @@ app.post('/api/v1/columnas/:columnaId/tareas', async (req, res) => {
 
 app.get('/api/v1/columnas/:columnaId/tareas', async (req, res) => {
   try {
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
     const [tareas] = await db.execute('SELECT * FROM tareas WHERE columna_id = ?', [req.params.columnaId]);
     res.json({ data: tareas });
   } catch (err) {
@@ -192,7 +195,7 @@ app.put('/api/v1/tareas/:id', async (req, res) => {
         fecha_limite, asignado_por, asignado_a, porcentaje_avance, prioridad
     } = req.body;
         
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
 
     const fields = [];
     const values = [];
@@ -223,7 +226,7 @@ app.put('/api/v1/tareas/:id', async (req, res) => {
 
 app.delete('/api/v1/tareas/:id', async (req, res) => {
   try {
-    const db = await mysql.createConnection(dbConfig);
+  const db = pool;
     await db.execute('DELETE FROM tareas WHERE id = ?', [req.params.id]);
     res.json({ message: 'Eliminado correctamente' });
   } catch (err) {
