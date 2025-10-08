@@ -47,16 +47,31 @@ export default function Tablero({ tablero, actualizarTablero, columnas, setColum
     }
   };
 
-  // Funcionamiento de la API: eliminar columna
-  const eliminarColumna = async (idColumna) => {
-    if (window.confirm("Seguro que quieres eliminar esta columna y todas sus tareas?")) {
-      try {
-        await eliminarColumnaApi(idColumna);
-        setColumnas(columnas.filter(c => c.id !== idColumna));
-      } catch (err) {
-        alert("Error al eliminar la columna: " + err.message);
-      }
+  const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
+  const [columnaAEliminar, setColumnaAEliminar] = React.useState(null);
+
+  const ejecutarEliminarColumna = async () => {
+    if (!columnaAEliminar) return;
+    try {
+      await eliminarColumnaApi(columnaAEliminar);
+      setColumnas(columnas.filter(c => c.id !== columnaAEliminar));
+      setConfirmModalVisible(false);
+      setColumnaAEliminar(null);
+    } catch (err) {
+      alert("Error al eliminar la columna: " + err.message);
+      setConfirmModalVisible(false);
+      setColumnaAEliminar(null);
     }
+  };
+
+  const confirmarEliminarColumna = (idColumna) => {
+    setColumnaAEliminar(idColumna);
+    setConfirmModalVisible(true);
+  };
+
+  const cancelarEliminarColumna = () => {
+    setConfirmModalVisible(false);
+    setColumnaAEliminar(null);
   };
 
   // Actualiza tareas en columna especifica (optimizado para manejar callbacks)
@@ -145,7 +160,7 @@ export default function Tablero({ tablero, actualizarTablero, columnas, setColum
                 index={index}
               />
               <button
-                onClick={() => eliminarColumna(col.id)}
+                onClick={() => confirmarEliminarColumna(col.id)}
                 className="btn btn-sm position-absolute"
                 style={{ 
                   top: '8px',
@@ -221,6 +236,18 @@ export default function Tablero({ tablero, actualizarTablero, columnas, setColum
           </div>
         </div>
       </div>
+
+      {confirmModalVisible && (
+        <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.3)' }} tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header"><h5 className="modal-title">Confirmar eliminación</h5><button type="button" className="btn-close" onClick={cancelarEliminarColumna}></button></div>
+              <div className="modal-body"><p>¿Estás seguro de que quieres eliminar esta columna y todas sus tareas?</p></div>
+              <div className="modal-footer"><button type="button" className="btn btn-secondary" onClick={cancelarEliminarColumna}>Cancelar</button><button type="button" className="btn btn-danger" onClick={ejecutarEliminarColumna}>Eliminar</button></div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal para agregar columna */}
       {modalColumna && (
