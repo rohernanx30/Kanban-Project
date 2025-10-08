@@ -8,6 +8,7 @@ export default function Tablero({ tablero, actualizarTablero, columnas, setColum
   const [modalColumna, setModalColumna] = React.useState(false);
   const [nombreNuevaColumna, setNombreNuevaColumna] = React.useState("");
 
+  // Validacion: no se permite nombre vacio para columna
   const cambiarNombre = (e) => {
     setNombre(e.target.value);
     actualizarTablero({ ...tablero, nombre: e.target.value });
@@ -22,6 +23,7 @@ export default function Tablero({ tablero, actualizarTablero, columnas, setColum
     setModalColumna(false);
   };
 
+  // Funcionamiento de la API: crear columna nueva
   const agregarColumna = async (e) => {
     e && e.preventDefault();
     if (!nombreNuevaColumna.trim()) {
@@ -45,8 +47,9 @@ export default function Tablero({ tablero, actualizarTablero, columnas, setColum
     }
   };
 
+  // Funcionamiento de la API: eliminar columna
   const eliminarColumna = async (idColumna) => {
-    if (window.confirm("¿Seguro que quieres eliminar esta columna y todas sus tareas?")) {
+    if (window.confirm("Seguro que quieres eliminar esta columna y todas sus tareas?")) {
       try {
         await eliminarColumnaApi(idColumna);
         setColumnas(columnas.filter(c => c.id !== idColumna));
@@ -56,17 +59,18 @@ export default function Tablero({ tablero, actualizarTablero, columnas, setColum
     }
   };
 
+  // Actualiza tareas en columna especifica
   const setTareasEnColumna = (idColumna, nuevasTareas) => {
     setColumnas(columnas.map(c => c.id === idColumna ? { ...c, tareas: nuevasTareas } : c));
   };
 
+  // Actualiza nombre de columna especifica
   const setNombreColumna = (idColumna, nuevoNombre) => {
     setColumnas(columnas.map(c => c.id === idColumna ? { ...c, nombre: nuevoNombre } : c));
   };
 
   return (
     <div className="container-fluid px-4 py-3 fade-in-up">
-      {/* Título del tablero */}
       <div className="mb-4">
         <div className="d-flex align-items-center mb-3">
           <div className="icon-wrapper me-3" style={{

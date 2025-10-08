@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -5,6 +6,7 @@ export default function AgregarTarea({ onAdd }) {
   const [open, setOpen] = useState(false);
   const [texto, setTexto] = useState("");
 
+  // Validacion: no se permite agregar tareas vacias
   const submit = () => {
     if (!texto.trim()) return;
     onAdd(texto.trim());

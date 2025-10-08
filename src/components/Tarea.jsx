@@ -1,6 +1,7 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+// Devuelve la clase de prioridad para mostrar color
 const getPriorityClass = (priority) => {
   switch (priority) {
     case 'Alto': return 'danger';
@@ -10,7 +11,8 @@ const getPriorityClass = (priority) => {
   }
 };
 
-export default function Tarea({ tarea, onEdit, onDelete }) {
+export default function Tarea({ tarea, onEdit, onDelete, onDragStart }) {
+  // Devuelve el icono segun prioridad
   const getPriorityIcon = (priority) => {
     switch (priority) {
       case 'Alto': return 'exclamation-triangle-fill';
@@ -20,6 +22,7 @@ export default function Tarea({ tarea, onEdit, onDelete }) {
     }
   };
 
+  // Devuelve el color segun prioridad
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'Alto': return 'var(--priority-high)';
@@ -29,9 +32,65 @@ export default function Tarea({ tarea, onEdit, onDelete }) {
     }
   };
 
+  // Drag and drop: inicia el arrastre de la tarea y notifica a las columnas
+  const handleDragStart = (e) => {
+    if (onDragStart) {
+      e.currentTarget.style.opacity = '0.6';
+      e.currentTarget.style.border = '2px dashed #1976d2';
+      onDragStart(e, tarea);
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setDragImage(e.currentTarget, 20, 20);
+      window.dispatchEvent(new CustomEvent('inicioArrastreGlobal', {
+        detail: { 
+          tareaId: tarea.id, 
+          columnaId: tarea.columna_id,
+          accion: 'inicio'
+        }
+      }));
+    }
+  };
+
+  // Drag and drop: actualiza la posicion de la tarea durante el arrastre
+  const handleDrag = (e) => {
+    const ahora = Date.now();
+    if (!window.ultimaActualizacionDrag || ahora - window.ultimaActualizacionDrag > 300) {
+      window.ultimaActualizacionDrag = ahora;
+      window.dispatchEvent(new CustomEvent('duranteArrastreGlobal', {
+        detail: { 
+          tareaId: tarea.id, 
+          columnaId: tarea.columna_id,
+          accion: 'arrastrando',
+          posicionX: e.clientX,
+          posicionY: e.clientY
+        }
+      }));
+    }
+  };
+
+  // Drag and drop: restaura estilos cuando termina el arrastre
+  const handleDragEnd = (e) => {
+    e.currentTarget.style.opacity = '1';
+    e.currentTarget.style.border = '1px solid var(--border-light)';
+    
+    // Disparar evento para notificar a todas las columnas que ha terminado el arrastre
+    window.dispatchEvent(new CustomEvent('finArrastreGlobal', {
+      detail: { 
+        tareaId: tarea.id, 
+        columnaId: tarea.columna_id,
+        accion: 'fin'
+      }
+    }));
+    
+    console.log('Evento finArrastreGlobal disparado - tarea:', tarea.id);
+  };
+
   return (
     <div 
       className="card task-card mb-3"
+      draggable
+      onDragStart={handleDragStart}
+      onDrag={handleDrag}
+      onDragEnd={handleDragEnd}
       style={{
         background: '#FFFFFF',
         border: '1px solid var(--border-light)',

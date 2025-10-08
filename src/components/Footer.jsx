@@ -2,6 +2,7 @@ import React from 'react';
 import kodigoIcon from '../assets/icon1.jpg';
 
 export default function Footer() {
+  // Footer visual, no requiere validaciones ni llamadas a la API
   return (
     <footer 
       className="mt-auto py-4 px-4"
@@ -14,7 +15,6 @@ export default function Footer() {
     >
       <div className="container-fluid">
         <div className="row align-items-center">
-          {/* Información del proyecto */}
           <div className="col-lg-4 col-md-6 mb-3 mb-lg-0">
             <div className="d-flex align-items-center text-white">
               <div className="icon-wrapper me-3" style={{
@@ -29,10 +29,8 @@ export default function Footer() {
               }}>
                 <i className="bi bi-kanban" style={{ fontSize: '1.5rem', color: 'white' }}></i>
               </div>
-              
             </div>
           </div>
-
           <div className="col-lg-4 col-md-6 mb-3 mb-lg-0">
             <div className="d-flex justify-content-center gap-3">
               <a 
@@ -40,7 +38,7 @@ export default function Footer() {
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="social-link d-flex align-items-center justify-content-center"
-                title="Kodigo - Academia de programación"
+                title="Kodigo - Academia de programacion"
                 style={{
                   width: '48px',
                   height: '48px',
@@ -65,8 +63,6 @@ export default function Footer() {
               >
             <img src={kodigoIcon} alt="Kodigo" style={{ width: '28px', height: '28px', borderRadius: '8px', objectFit: 'cover', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }} />
           </a>
-
-              {/* GitHub */}
               <a 
                 href="https://github.com/rohernanx30/Kanban-Project" 
                 target="_blank" 

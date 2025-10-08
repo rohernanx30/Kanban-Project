@@ -1,6 +1,7 @@
 import logo from "../assets/icon.png";
 
 export default function Header({ vista, crearTablero, volverInicio, verTabla }) {
+    // Header visual, no requiere validaciones ni llamadas a la API
     return (
         <nav className="navbar navbar-expand-lg px-4 py-3" style={{
             background: 'linear-gradient(135deg, #87CEEB 0%, #B8A7D9 100%)',
@@ -34,8 +35,6 @@ export default function Header({ vista, crearTablero, volverInicio, verTabla }) 
                 </div>
                 TaskFlow
             </a>
-
-            {/* Botón hamburguesa solo en móvil */}
             <button
                 className="navbar-toggler d-lg-none"
                 type="button"
@@ -45,8 +44,6 @@ export default function Header({ vista, crearTablero, volverInicio, verTabla }) 
             >
                 <span className="navbar-toggler-icon"></span>
             </button>
-
-            {/* Menú de escritorio */}
             <div className="collapse navbar-collapse d-none d-lg-flex justify-content-between">
                 <ul className="navbar-nav me-auto">
                     <li className="nav-item">
@@ -149,7 +146,6 @@ export default function Header({ vista, crearTablero, volverInicio, verTabla }) 
                 </div>
             </div>
 
-            {/* Offcanvas para móvil */}
             <div
                 className="offcanvas offcanvas-end d-lg-none"
                 tabIndex="-1"

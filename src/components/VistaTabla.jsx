@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Helper functions for date calculations
+// Calcula los dias totales entre dos fechas
 const calcularDiasTotales = (fechaInicio, fechaFin) => {
   if (!fechaInicio || !fechaFin) return 'N/A';
   const inicio = new Date(fechaInicio);
@@ -10,6 +10,7 @@ const calcularDiasTotales = (fechaInicio, fechaFin) => {
   return diffDias >= 0 ? diffDias : 0;
 };
 
+// Calcula los dias faltantes hasta la fecha fin
 const calcularDiasFaltantes = (fechaFin) => {
   if (!fechaFin) return 'N/A';
   const hoy = new Date();
@@ -25,20 +26,20 @@ export default function VistaTabla({ tableros, getColumnas, getTareas }) {
   const [tableroSeleccionado, setTableroSeleccionado] = React.useState(null);
   const [tareas, setTareas] = React.useState([]);
 
+  // Funcionamiento de la API: carga tareas del tablero seleccionado
   React.useEffect(() => {
     if (tableroSeleccionado) {
       const cargarTareas = async () => {
         try {
-          const cols = await getColumnas(tableroSeleccionado.id);
+          const cols = await getColumnas(tableroSeleccionado.id); // API: obtener columnas
           const tareasPorColumna = await Promise.all(
             cols.map(async (col) => {
-              const tareasDeCol = await getTareas(col.id);
+              const tareasDeCol = await getTareas(col.id); // API: obtener tareas
               return tareasDeCol.map(t => ({ ...t, estado: col.nombre }));
             })
           );
           setTareas(tareasPorColumna.flat());
         } catch (error) {
-          console.error("Error al cargar tareas:", error);
           alert("No se pudieron cargar las tareas del tablero.");
         }
       };
@@ -48,6 +49,7 @@ export default function VistaTabla({ tableros, getColumnas, getTareas }) {
     }
   }, [tableroSeleccionado, getColumnas, getTareas]);
 
+  // Validacion: seleccion de tablero
   const handleSelectTablero = (e) => {
     const tableroId = e.target.value;
     if (tableroId) {

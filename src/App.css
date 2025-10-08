@@ -421,15 +421,6 @@ footer {
     font-weight: bold;
 }
 
-.social-link img {
-    transition: all 0.3s ease;
-}
-
-.social-link:hover img {
-    transform: scale(1.1);
-    filter: brightness(1.2) contrast(1.2) saturate(1.1);
-}
-
 /* Layout adjustments */
 .app {
     min-height: 100vh;
