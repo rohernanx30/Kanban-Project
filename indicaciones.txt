@@ -1,0 +1,15 @@
+# Indicaciones para ejecutar el proyecto Kanban
+
+1. Instala las dependencias:
+	npm install
+
+2. Instala Bootstrap
+	npm install bootstrap
+
+3. Ejecuta la base de datos:
+
+4. Levanta la API Node:
+	node api.js
+
+5. Corre el frontend (Vite):
+	npm run dev
